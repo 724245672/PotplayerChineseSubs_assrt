@@ -2,7 +2,7 @@
 
 1. 下载伪射手搜索插件
 
-    项目地址 [PotplayerChineseSubs_assrt](https://github.com/Exhen/PotplayerChineseSubs_assrt)
+    项目地址 [PotplayerChineseSubs_assrt](https://github.com/724245672/PotplayerChineseSubs_assrt)
 
 2. 更新最新版 PotPlayer.
 
