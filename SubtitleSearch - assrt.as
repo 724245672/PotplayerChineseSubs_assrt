@@ -64,6 +64,7 @@ string HtmlSpecialCharsDecode(string str)
 	return str;
 }
 string API_URL = "http://api.assrt.net";
+string Q_URL = "http://secure.assrt.net";
 array<array<string>> LangTable =
 {
 	{ "en", "English" },                              
@@ -80,7 +81,7 @@ string GetVersion()
 }
 string GetDesc()
 {
-	return "https://github.com/Exhen/PotplayerChineseSubs";
+	return "https://github.com/724245672/PotplayerChineseSubs_assrt";
 }
 string GetLoginTitle()
 {
@@ -147,15 +148,13 @@ string SubtitleWebSearch(string MovieFileName, dictionary MovieMetaData)
 			title=title+" S"+season;
 		}
 	}
-	string finalURL = UrlComposeQuery(API_URL, '/v1/sub/search', {
-		{"token", Token},
-		{"q", title},
-		{"filelist", '1'},
-		{"cnt", '15'},
-		{"no_muxer", '1'}
+	string finalURL = UrlComposeQuery(Q_URL, '/sub/', {
+		{"searchword", title},
+		{"sort", 'relevance'}
 	});
 	return finalURL;
 }
+
 array<dictionary> SubtitleSearch(string MovieFileName, dictionary MovieMetaData)
 {
 	array<dictionary> ret;
@@ -164,7 +163,32 @@ array<dictionary> SubtitleSearch(string MovieFileName, dictionary MovieMetaData)
     if(MovieFileNameSplit[MovieFileNameSplit.length()-1]=="mpls"||MovieFileNameSplit[MovieFileNameSplit.length()-1]=="m2ts"){
         return ret;
     }
-	string finalURL = SubtitleWebSearch(MovieFileName, MovieMetaData);
+
+	string title = HtmlSpecialCharsDecode(string(MovieMetaData["title"]));
+	if(MovieMetaData.exists("seasonNumber")){
+		string season=string(MovieMetaData["seasonNumber"]);
+		if(season.length()<2){
+			season='0'+season;
+		}
+		if(MovieMetaData.exists("episodeNumber")){
+			string episode=string(MovieMetaData["episodeNumber"]);
+			if(episode.length()<2){
+				episode='0'+episode;
+			}
+			title=title+" S"+season+'E'+episode;
+		}
+		else{
+			title=title+" S"+season;
+		}
+	}
+	string finalURL = UrlComposeQuery(API_URL, '/v1/sub/search', {
+		{"token", Token},
+		{"q", title},
+		{"filelist", '1'},
+		{"cnt", '15'},
+		{"no_muxer", '1'}
+	});
+	
 	for(int j=0;;j++){
 		string URL=finalURL+"&pos="+formatInt(j*15);
 		// HostPrintUTF8(URL);
